@@ -329,35 +329,37 @@
         const letterElement = document.getElementById("letter");
         const languageToggle = document.getElementById("languageToggle");
         const randomFont = () => {
-            const randomIndex = Math.floor(Math.random() * fonts.length);
-            return fonts[randomIndex];
+            return random(fonts);
         };
 
         const showLetter = (letter) => {
             letterElement.style.fontFamily = randomFont();
             letterElement.innerHTML = letter;
         };
-        const randomLetter = (set) => {
+        const random = (set) => {
             const randomIndex = Math.floor(Math.random() * set.length);
             return set[randomIndex];
         };
         const showRandomLetter = () => {
-            showLetter(randomLetter(letters[language][0] + letters[language][1]));
+            showLetter(random(letters[language][0] + letters[language][1]));
         };
         const showRandomPair = () => {
-            let letter = randomLetter(letters[language][0]);
+            const letter = random(letters[language][0]);
             showLetter(letter + " " + letters[language][1][letters[language][0].indexOf(letter)]);
+        };
+        const showRandomWord = () => {
+            const randomWord = random(words[language]);
+            showLetter(randomWord);
         };
 
         const showContent = () => {
-            if (mode === "A") {
-                showRandomLetter();
-            } else if (mode === "Aa") {
-                showRandomPair();
-            } else {
-                const randomWord = randomLetter(words[language]);
-                showLetter(randomWord);
-            }
+            const DISPLAY_MODES = {
+                'A': showRandomLetter,
+                'Aa': showRandomPair,
+                'Word': showRandomWord
+            };
+
+            (DISPLAY_MODES[mode] || showRandomWord)();
         }
 
         const updateModeView = () => {
