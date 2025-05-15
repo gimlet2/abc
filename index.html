@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Reading</title>
+    <link rel="manifest" href="manifest.json">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&family=Permanent+Marker&family=Press+Start+2P&family=Pacifico&family=Fredoka+One&family=Righteous&family=Bangers&family=Comic+Neue:wght@700&family=Creepster&family=VT323&display=swap"
@@ -102,13 +103,22 @@
 
 
         #container {
-            text-align: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         #letter {
-            font-size: 600px;
             color: #333;
+            font-size: 33vmin; /* reduced from 80vh to 40vmin */
+            text-align: center;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            line-height: 1;
         }
+
 
         /* Make menu responsive */
         @media screen and (max-width: 600px) {
@@ -117,6 +127,7 @@
                 padding: 0.5rem;
             }
         }
+
         .switch3 {
             position: relative;
             display: inline-block;
@@ -169,6 +180,7 @@
             transition: opacity 0.3s;
             opacity: 0.5;
         }
+
         .mode-label3:first-child {
             opacity: 1;
         }
@@ -181,12 +193,12 @@
     <div class="menu-item">
 
         <div class="switch-container">
-            <span class="language-label">RU</span>
+            <span class="language-label">DE</span>
             <label class="switch">
                 <input type="checkbox" id="languageToggle" onchange="page.changeLanguage()">
                 <span class="slider"></span>
             </label>
-            <span class="language-label">DE</span>
+            <span class="language-label">RU</span>
         </div>
     </div>
 
@@ -308,8 +320,8 @@
         };
 
 
-        let language = "DE";
-        let currentMode = 0;
+        let language = localStorage.getItem("language") || "DE";
+        let currentMode = localStorage.getItem("mode") || 0;
         let mode = "A"; // Default mode
         const modes = ['A', 'Aa', 'Words'];
 
@@ -340,7 +352,7 @@
         const showContent = () => {
             if (mode === "A") {
                 showRandomLetter();
-            } else if( mode === "Aa") {
+            } else if (mode === "Aa") {
                 showRandomPair();
             } else {
                 const randomWord = randomLetter(words[language]);
@@ -348,9 +360,7 @@
             }
         }
 
-        const toggleMode = () => {
-            currentMode = (currentMode + 1) % 3;
-
+        const updateModeView = () => {
             mode = modes[currentMode];
             const slider = document.querySelector('.slider3');
             const positions = [0, 47, 100]; // positions in pixels for each state
@@ -366,6 +376,11 @@
                     label.style.opacity = '0.5';
                 }
             });
+        }
+        const toggleMode = () => {
+            currentMode = (currentMode + 1) % 3;
+            localStorage.setItem("mode", currentMode);
+            updateModeView();
 
             showContent();
         }
@@ -378,9 +393,22 @@
         const changeLanguage = () => {
             languageToggle.blur();
             language = language === "DE" ? "RU" : "DE";
+            localStorage.setItem("language", language);
             showContent();
         }
         const init = () => {
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('./sw.js')
+                        .then(registration => {
+                            console.log('ServiceWorker registration successful');
+                        })
+                        .catch(err => {
+                            console.log('ServiceWorker registration failed: ', err);
+                        });
+                });
+            }
+            updateModeView();
             showContent();
         }
         return {
