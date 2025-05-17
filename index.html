@@ -123,13 +123,13 @@
         }
 
 
-        /* Make menu responsive */
-        @media screen and (max-width: 600px) {
-            #menu {
-                justify-content: space-around;
-                padding: 0.5rem;
-            }
-        }
+        /*!* Make menu responsive *!*/
+        /*@media screen and (max-width: 600px) {*/
+        /*    #menu {*/
+        /*        justify-content: space-around;*/
+        /*        padding: 0.5rem;*/
+        /*    }*/
+        /*}*/
 
         .menu-item button {
             background-color: #4CAF50;
@@ -162,12 +162,54 @@
         }
 
         /* Responsive adjustments */
+        /* Enhance menu responsiveness */
         @media screen and (max-width: 600px) {
+            #menu {
+                flex-direction: column;
+                height: auto;
+                padding: 1rem;
+                gap: 15px;
+            }
+
+            .menu-item {
+                width: 100%;
+                justify-content: center;
+            }
+
             .menu-item button {
-                padding: 6px 12px;
-                font-size: 12px;
+                width: 100%;
+                padding: 12px 20px;
+                font-size: 16px;
+                min-height: 44px; /* Better touch target */
+            }
+
+            /* Adjust language toggle switch for mobile */
+            .switch-container {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 5px;
+            }
+
+            .language-label {
+                font-size: 16px;
+            }
+
+            .switch {
+                width: 70px; /* Slightly larger switch */
+                height: 34px;
+            }
+
+            .slider:before {
+                height: 26px;
+                width: 26px;
+            }
+
+            /* Adjust the letter container to account for taller menu */
+            #container {
+                margin-top: 280px; /* Adjust based on your menu height */
             }
         }
+
 
         .highlighted-word {
             background-color: #ffeb3b;
