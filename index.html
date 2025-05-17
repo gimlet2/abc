@@ -108,7 +108,7 @@
             align-items: center;
         }
 
-        #letter {
+        .letter {
             color: #333;
             font-size: 33vmin; /* reduced from 80vh to 40vmin */
             text-align: center;
@@ -116,6 +116,10 @@
             margin: 0;
             padding: 0;
             line-height: 1;
+        }
+
+        .letter-story {
+            font-size: 15vmin;
         }
 
 
@@ -165,6 +169,14 @@
             }
         }
 
+        .highlighted-word {
+            background-color: #ffeb3b;
+            padding: 2px 4px;
+            border-radius: 3px;
+            color: #000;
+            font-weight: bold;
+        }
+
 
     </style>
 </head>
@@ -191,13 +203,13 @@
     <div class="menu-item">
         <button class="mode" onclick="page.toggleMode(2)">Words</button>
     </div>
-<!--    <div class="menu-item">-->
-<!--        <button class="mode" onclick="page.toggleMode(3)">Story</button>-->
-<!--    </div>-->
+    <div class="menu-item">
+        <button class="mode" onclick="page.toggleMode(3)">Story</button>
+    </div>
 
 </div>
 <div id="container">
-        <span id="letter">
+        <span id="letter" class="letter">
 
         </span>
 </div>
@@ -299,31 +311,27 @@
         const stories = {
             "DE": [
                 "Der kleine Bär und der Apfel\n" +
-                "\n" +
                 "Der kleine Bär heißt Ben.\n" +
                 "Ben lebt im Wald.\n" +
-                "\n" +
                 "Eines Tages hat Ben Hunger.\n" +
                 "Er sagt: „Ich will einen Apfel!“\n" +
-                "\n" +
                 "Ben läuft zum Apfelbaum.\n" +
                 "Aber – oh nein! Die Äpfel sind zu hoch.\n" +
-                "\n" +
                 "Da kommt sein Freund Max, die Maus.\n" +
                 "Max sagt: „Ich helfe dir!“\n" +
-                "\n" +
                 "Max klettert auf den Baum.\n" +
                 "Plopp! Ein Apfel fällt runter.\n" +
-                "\n" +
                 "Ben freut sich: „Danke, Max!“\n" +
                 "Sie essen den Apfel zusammen.\n" +
-                "\n" +
                 "Mmh, lecker!\n" +
                 "Ben sagt: „Freunde sind toll!“"
             ],
             "RU": []
         };
 
+        let currentStory = '';
+        let currentStoryLine = 0;
+        let currentStoryLinesWord = 0;
 
         let language = localStorage.getItem("language") || "DE";
         let currentMode = Number(localStorage.getItem("mode")) || 0;
@@ -357,14 +365,36 @@
             showLetter(randomWord);
         };
 
+        const showStory = () => {
+            if (currentStory !== '') {
+                if (currentStoryLinesWord === currentStory.split('\n')[currentStoryLine].split(' ').length - 1) {
+                    currentStoryLine++;
+                    currentStoryLinesWord = 0;
+                } else {
+                    currentStoryLinesWord++;
+                }
+            } else {
+                currentStory = random(stories[language]);
+                currentStoryLine = 0;
+                currentStoryLinesWord = 0;
+            }
+            let words = currentStory.split('\n')[currentStoryLine].split(' ')
+                .map((word, index) => {
+                    if (index === currentStoryLinesWord) {
+                        return `<span class="highlighted-word">${word}</span>`;
+                    } else {
+                        return word;
+                    }
+                });
+            letterElement.innerHTML = words.join(' ');
+        };
+
         const showContent = () => {
             const DISPLAY_MODES = {
                 'A': showRandomLetter,
                 'Aa': showRandomPair,
                 'Words': showRandomWord,
-                'Story': () => {
-                    letterElement.innerHTML = random(stories[language]);
-                }
+                'Story': showStory,
             };
 
             (DISPLAY_MODES[mode] || showRandomLetter)();
@@ -372,7 +402,11 @@
 
         const updateModeView = () => {
             mode = modes[currentMode];
-
+            if (mode === "Story") {
+                letterElement.classList.add('letter-story');
+            } else {
+                letterElement.classList.remove('letter-story');
+            }
             // Update active label styling
             const labels = document.querySelectorAll('button.mode');
             labels.forEach((label, index) => {
