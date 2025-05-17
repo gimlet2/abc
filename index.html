@@ -326,12 +326,29 @@
                 "Mmh, lecker!\n" +
                 "Ben sagt: „Freunde sind toll!“"
             ],
-            "RU": []
+            "RU": ["Медвежонок и яблоко\n" +
+            "Маленького медвежонка зовут Бен.\n" +
+            "Бен живёт в лесу.\n" +
+            "Однажды Бен проголодался.\n" +
+            "Он говорит: «Я хочу яблоко!»\n" +
+            "Бен бежит к яблоне.\n" +
+            "Но — ой, нет! Яблоки слишком высоко.\n" +
+            "Приходит его друг Макс, мышонок.\n" +
+            "Макс говорит: «Я тебе помогу!»\n" +
+            "Макс взбирается на дерево.\n" +
+            "Шлёп! Яблоко падает вниз.\n" +
+            "Бен радуется: «Спасибо, Макс!»\n" +
+            "Они едят яблоко вместе.\n" +
+            "М-м-м, вкусно!\n" +
+            "Бен говорит: «Друзья — это здорово!»"]
         };
-
-        let currentStory = '';
-        let currentStoryLine = 0;
         let currentStoryLinesWord = 0;
+
+        let currentStory = localStorage.getItem("story") || '';
+        if(currentStory !== '') {
+            currentStoryLinesWord = -1;
+        }
+        let currentStoryLine = Number(localStorage.getItem("story_line")) || 0;
 
         let language = localStorage.getItem("language") || "DE";
         let currentMode = Number(localStorage.getItem("mode")) || 0;
@@ -365,7 +382,12 @@
             showLetter(randomWord);
         };
 
-        const showStory = () => {
+        const showStory = (languageChanged) => {
+            if (languageChanged) {
+                currentStory = '';
+                currentStoryLine = 0;
+                currentStoryLinesWord = 0;
+            }
             if (currentStory !== '') {
                 if (currentStoryLinesWord === currentStory.split('\n')[currentStoryLine].split(' ').length - 1) {
                     currentStoryLine++;
@@ -386,10 +408,12 @@
                         return word;
                     }
                 });
+            localStorage.setItem("story", currentStory);
+            localStorage.setItem("story_line", currentStoryLine);
             letterElement.innerHTML = words.join(' ');
         };
 
-        const showContent = () => {
+        const showContent = (languageChanged = false) => {
             const DISPLAY_MODES = {
                 'A': showRandomLetter,
                 'Aa': showRandomPair,
@@ -397,7 +421,7 @@
                 'Story': showStory,
             };
 
-            (DISPLAY_MODES[mode] || showRandomLetter)();
+            (DISPLAY_MODES[mode] || showRandomLetter)(languageChanged);
         }
 
         const updateModeView = () => {
@@ -434,7 +458,7 @@
             languageToggle.blur();
             language = language === "DE" ? "RU" : "DE";
             localStorage.setItem("language", language);
-            showContent();
+            showContent(true);
         }
         const init = () => {
             if ('serviceWorker' in navigator) {
