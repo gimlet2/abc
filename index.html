@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&family=Permanent+Marker&family=Press+Start+2P&family=Pacifico&family=Fredoka+One&family=Righteous&family=Bangers&family=Comic+Neue:wght@700&family=Creepster&family=VT323&display=swap"
           rel="stylesheet">
 
-
     <style>
         body {
             background-color: #f0f0f0;
@@ -128,61 +127,42 @@
             }
         }
 
-        .switch3 {
-            position: relative;
-            display: inline-block;
-            width: 150px;
-            height: 30px;
-        }
-
-        .slider3 {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+        .menu-item button {
             background-color: #4CAF50;
-            transition: .4s;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-        }
-
-        .slider3:before {
-            position: absolute;
-            content: "";
-            height: 22px;
-            width: 22px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            opacity: 20%;
-            transition: .4s;
-            border-radius: 50%;
-            transform: var(--position, translateX(0));
-            z-index: 2;
-        }
-
-        .mode-labels3 {
-            position: relative;
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            padding: 0 12px;
             color: white;
-            font-size: 12px;
-            z-index: 1;
-        }
-
-        .mode-label3 {
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            width: 90px;
             font-weight: bold;
-            transition: opacity 0.3s;
-            opacity: 0.5;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
-        .mode-label3:first-child {
-            opacity: 1;
+        .menu-item button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-item button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Active state for buttons */
+        .menu-item button.active {
+            background-color: #2196F3;
+        }
+
+        /* Responsive adjustments */
+        @media screen and (max-width: 600px) {
+            .menu-item button {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
         }
 
 
@@ -203,20 +183,17 @@
     </div>
 
     <div class="menu-item">
-        <div class="switch-container">
-            <label class="switch3">
-                <button id="modeToggle" style="display: none"></button>
-                <span class="slider3" onclick="page.toggleMode()">
-                <span class="mode-labels3">
-                    <span class="mode-label3">A</span>
-                    <span class="mode-label3">Aa</span>
-                    <span class="mode-labele">Words</span>
-                </span>
-            </span>
-            </label>
-        </div>
-
+        <button class="mode" onclick="page.toggleMode(0)">A</button>
     </div>
+    <div class="menu-item">
+        <button class="mode" onclick="page.toggleMode(1)">Aa</button>
+    </div>
+    <div class="menu-item">
+        <button class="mode" onclick="page.toggleMode(2)">Words</button>
+    </div>
+<!--    <div class="menu-item">-->
+<!--        <button class="mode" onclick="page.toggleMode(3)">Story</button>-->
+<!--    </div>-->
 
 </div>
 <div id="container">
@@ -319,11 +296,39 @@
             ]
         };
 
+        const stories = {
+            "DE": [
+                "Der kleine Bär und der Apfel\n" +
+                "\n" +
+                "Der kleine Bär heißt Ben.\n" +
+                "Ben lebt im Wald.\n" +
+                "\n" +
+                "Eines Tages hat Ben Hunger.\n" +
+                "Er sagt: „Ich will einen Apfel!“\n" +
+                "\n" +
+                "Ben läuft zum Apfelbaum.\n" +
+                "Aber – oh nein! Die Äpfel sind zu hoch.\n" +
+                "\n" +
+                "Da kommt sein Freund Max, die Maus.\n" +
+                "Max sagt: „Ich helfe dir!“\n" +
+                "\n" +
+                "Max klettert auf den Baum.\n" +
+                "Plopp! Ein Apfel fällt runter.\n" +
+                "\n" +
+                "Ben freut sich: „Danke, Max!“\n" +
+                "Sie essen den Apfel zusammen.\n" +
+                "\n" +
+                "Mmh, lecker!\n" +
+                "Ben sagt: „Freunde sind toll!“"
+            ],
+            "RU": []
+        };
+
 
         let language = localStorage.getItem("language") || "DE";
-        let currentMode = localStorage.getItem("mode") || 0;
+        let currentMode = Number(localStorage.getItem("mode")) || 0;
         let mode = "A"; // Default mode
-        const modes = ['A', 'Aa', 'Words'];
+        const modes = ['A', 'Aa', 'Words', 'Story'];
 
 
         const letterElement = document.getElementById("letter");
@@ -356,31 +361,30 @@
             const DISPLAY_MODES = {
                 'A': showRandomLetter,
                 'Aa': showRandomPair,
-                'Word': showRandomWord
+                'Words': showRandomWord,
+                'Story': () => {
+                    letterElement.innerHTML = random(stories[language]);
+                }
             };
 
-            (DISPLAY_MODES[mode] || showRandomWord)();
+            (DISPLAY_MODES[mode] || showRandomLetter)();
         }
 
         const updateModeView = () => {
             mode = modes[currentMode];
-            const slider = document.querySelector('.slider3');
-            const positions = [0, 47, 100]; // positions in pixels for each state
-            slider.style.setProperty('--position', `translateX(${positions[currentMode]}px)`);
 
             // Update active label styling
-            const labels = document.querySelectorAll('.mode-label3');
+            const labels = document.querySelectorAll('button.mode');
             labels.forEach((label, index) => {
-
                 if (index === currentMode) {
-                    label.style.opacity = '1';
+                    label.classList.add('active');
                 } else {
-                    label.style.opacity = '0.5';
+                    label.classList.remove('active');
                 }
             });
         }
-        const toggleMode = () => {
-            currentMode = (currentMode + 1) % 3;
+        const toggleMode = (mode) => {
+            currentMode = mode;
             localStorage.setItem("mode", currentMode);
             updateModeView();
 
