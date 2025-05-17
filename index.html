@@ -454,6 +454,14 @@
                 showContent();
             }
         };
+
+        document.getElementById('container').addEventListener('touchend', (ev) => {
+            if (!languageToggle.matches(':focus')) {
+                ev.preventDefault(); // Prevent default touch behavior
+                showContent();
+            }
+        });
+
         const changeLanguage = () => {
             languageToggle.blur();
             language = language === "DE" ? "RU" : "DE";
