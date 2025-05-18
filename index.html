@@ -387,7 +387,7 @@
         let currentStoryLinesWord = 0;
 
         let currentStory = localStorage.getItem("story") || '';
-        if(currentStory !== '') {
+        if (currentStory !== '') {
             currentStoryLinesWord = -1;
         }
         let currentStoryLine = Number(localStorage.getItem("story_line")) || 0;
@@ -430,7 +430,7 @@
                 currentStoryLine = 0;
                 currentStoryLinesWord = 0;
             }
-            if (currentStory !== '') {
+            if (currentStory !== '' && currentStoryLine < currentStory.split('\n').length) {
                 if (currentStoryLinesWord === currentStory.split('\n')[currentStoryLine].split(' ').length - 1) {
                     currentStoryLine++;
                     currentStoryLinesWord = 0;
