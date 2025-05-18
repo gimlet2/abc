@@ -491,7 +491,7 @@
             showContent();
         }
 
-        window.onkeydown = (ev) => {
+        window.onkeyup = (ev) => {
             if (ev.code === "Space" && !languageToggle.matches(':focus')) {
                 showContent();
             }

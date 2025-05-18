@@ -1,4 +1,4 @@
-const CACHE_NAME = 'letter-display-v1';
+const CACHE_NAME = 'letter-display-v2';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
